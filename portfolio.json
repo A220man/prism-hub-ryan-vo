@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "name": "prism-hub-ryan-vo",
+  "owner": "A220man",
+  "email": "ryandtvo@gmail.com",
+  "domain": "AI/ML developer tools",
+  "summary": "Work in progress: prism-hub-ryan-vo",
+  "workflows": [
+    "Create and manage Minecraft instances with version/loader selection",
+    "Launch instances with automatic Java detection and memory configuration",
+    "Authenticate via Yggdrasil/Microsoft with Authlib-Injector support"
+  ],
+  "auth": "oidc-keycloak-saml-broker",
+  "llm_providers": [
+    "openai-compatible",
+    "anthropic",
+    "gemini",
+    "ollama"
+  ],
+  "status": "work-in-progress"
+}
