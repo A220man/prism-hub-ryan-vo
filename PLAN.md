@@ -4,7 +4,7 @@ Each round completes one feature or repair. Future items are planned, not implem
 
 ## Current round
 
-project-skeleton
+instance-management
 
 ## Roadmap
 
@@ -24,12 +24,14 @@ Tests: `backend/tests/test_health.py`, `backend/tests/test_instances.py`, `backe
 
 ### instance-management — Minecraft instance management (create, list, launch)
 
-Status: planned
+Status: in_progress
 
 Acceptance:
 - Create new instance with version selection
 - List instances with metadata
 - Launch instance with Java detection
+
+Implementation: `backend/app/services/java_detection.py`, `backend/app/services/instance_service.py`, `backend/app/api/v1/instances.py`, `frontend/src/types/api.ts`, `frontend/src/api/instances.ts`, `frontend/src/components/InstancesPage.tsx`, `frontend/src/App.css`
 
 ### auth-yggdrasil — Yggdrasil authentication with ALI support
 

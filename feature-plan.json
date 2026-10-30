@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "current_feature": "project-skeleton",
+  "current_feature": "instance-management",
   "features": [
     {
       "id": "project-skeleton",
@@ -61,13 +61,21 @@
     {
       "id": "instance-management",
       "title": "Minecraft instance management (create, list, launch)",
-      "status": "planned",
+      "status": "in_progress",
       "acceptance": [
         "Create new instance with version selection",
         "List instances with metadata",
         "Launch instance with Java detection"
       ],
-      "implementation": [],
+      "implementation": [
+        "backend/app/services/java_detection.py",
+        "backend/app/services/instance_service.py",
+        "backend/app/api/v1/instances.py",
+        "frontend/src/types/api.ts",
+        "frontend/src/api/instances.ts",
+        "frontend/src/components/InstancesPage.tsx",
+        "frontend/src/App.css"
+      ],
       "tests": []
     },
     {

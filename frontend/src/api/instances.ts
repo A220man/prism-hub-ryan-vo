@@ -1,5 +1,5 @@
 import axios from 'axios';
-import type { Instance, InstanceListResponse, InstanceCreate, InstanceUpdate } from '../types/api';
+import type { Instance, InstanceListResponse, InstanceCreate, InstanceUpdate, LaunchInfo } from '../types/api';
 
 const api = axios.create({
   baseURL: '/api/v1',
@@ -26,6 +26,9 @@ export const instancesApi = {
 
   launch: (id: string) =>
     api.post<Instance>(`/instances/${id}/launch`),
+
+  getLaunchInfo: (id: string) =>
+    api.get<LaunchInfo>(`/instances/${id}/launch-info`),
 };
 
 export default api;
