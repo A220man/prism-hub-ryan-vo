@@ -52,3 +52,18 @@ export interface InstanceUpdate {
   resolution_height?: number;
   fullscreen?: boolean;
 }
+
+export interface JavaInfo {
+  path: string;
+  version: string;
+  major_version: number;
+  is_jdk: boolean;
+}
+
+export interface LaunchInfo {
+  instance: Instance;
+  java_detected: JavaInfo | null;
+  java_executable: string | null;
+  launch_command: string[];
+  required_java_version: number;
+}

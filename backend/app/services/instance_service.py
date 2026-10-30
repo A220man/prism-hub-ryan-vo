@@ -5,6 +5,7 @@ from datetime import datetime
 
 from app.models.instance_db import InstanceModel
 from app.models.instance import InstanceCreate, InstanceUpdate, InstanceResponse, InstanceListResponse, InstanceStatus
+from app.services.java_detection import java_detection_service, JavaInfo
 
 
 class InstanceService:
@@ -95,3 +96,83 @@ class InstanceService:
         await self.db.commit()
         await self.db.refresh(db_instance)
         return InstanceResponse.model_validate(db_instance)
+
+    async def get_launch_info(self, instance_id: str) -> Optional[dict]:
+        """Get launch information including detected Java and launch command."""
+        result = await self.db.execute(select(InstanceModel).where(InstanceModel.id == instance_id))
+        db_instance = result.scalar_one_or_none()
+        if not db_instance:
+            return None
+
+        # Detect suitable Java for this instance's Minecraft version
+        java_info = java_detection_service.find_suitable_java(db_instance.version)
+
+        # Determine Java executable to use
+        java_executable = db_instance.java_version
+        java_detected = None
+        if java_info:
+            java_detected = {
+                "path": java_info.path,
+                "version": java_info.version,
+                "major_version": java_info.major_version,
+                "is_jdk": java_info.is_jdk,
+            }
+            java_executable = java_info.path
+        elif db_instance.java_version:
+            java_executable = db_instance.java_version
+
+        # Build launch command (simplified - real implementation would be more complex)
+        launch_command = self._build_launch_command(db_instance, java_executable)
+
+        return {
+            "instance": InstanceResponse.model_validate(db_instance),
+            "java_detected": java_detected,
+            "java_executable": java_executable,
+            "launch_command": launch_command,
+            "required_java_version": java_detection_service._get_required_java_version(db_instance.version),
+        }
+
+    def _build_launch_command(self, instance: InstanceModel, java_executable: str) -> List[str]:
+        """Build the Java command to launch Minecraft."""
+        cmd = [java_executable]
+
+        # Memory settings
+        cmd.extend([f"-Xms{instance.memory_min}M", f"-Xmx{instance.memory_max}M"])
+
+        # JVM arguments for Minecraft
+        cmd.extend([
+            "-XX:+UseG1GC",
+            "-XX:+UnlockExperimentalVMOptions",
+            "-XX:G1NewSizePercent=20",
+            "-XX:G1ReservePercent=20",
+            "-XX:MaxGCPauseMillis=50",
+            "-XX:G1HeapRegionSize=32M",
+        ])
+
+        # Game directory
+        if instance.game_dir:
+            cmd.extend(["-Duser.dir", instance.game_dir])
+
+        # Main class placeholder - real implementation would resolve from version manifest
+        cmd.extend(["-cp", "\"libraries/*\"", "net.minecraft.client.main.Main"])
+
+        # Game arguments
+        cmd.extend([
+            "--username", "Player",
+            "--version", instance.version,
+            "--gameDir", instance.game_dir or ".",
+            "--assetsDir", "assets",
+            "--assetIndex", instance.version,
+            "--uuid", "00000000-0000-0000-0000-000000000000",
+            "--accessToken", "0",
+            "--userType", "legacy",
+            "--versionType", "Prism Hub",
+        ])
+
+        if instance.fullscreen:
+            cmd.append("--fullscreen")
+
+        cmd.extend(["--width", str(instance.resolution_width)])
+        cmd.extend(["--height", str(instance.resolution_height)])
+
+        return cmd

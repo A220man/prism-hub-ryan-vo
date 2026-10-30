@@ -68,3 +68,10 @@ async def launch_instance(instance_id: str, db: AsyncSession = Depends(get_db)):
     if not instance:
         raise HTTPException(status_code=404, detail="Instance not found")
     return instance
+@router.get("/instances/{instance_id}/launch-info")
+async def get_launch_info(instance_id: str, db: AsyncSession = Depends(get_db)):
+    service = InstanceService(db)
+    launch_info = await service.get_launch_info(instance_id)
+    if not launch_info:
+        raise HTTPException(status_code=404, detail="Instance not found")
+    return launch_info

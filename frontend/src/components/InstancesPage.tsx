@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { instancesApi } from '../api/instances';
-import type { Instance, InstanceCreate } from '../types/api';
+import type { Instance, InstanceCreate, LaunchInfo } from '../types/api';
 
 const InstancesPage: React.FC = () => {
   const [instances, setInstances] = useState<Instance[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showLaunchInfoModal, setShowLaunchInfoModal] = useState(false);
+  const [launchInfo, setLaunchInfo] = useState<LaunchInfo | null>(null);
+  const [launchInfoLoading, setLaunchInfoLoading] = useState(false);
   const [formData, setFormData] = useState<InstanceCreate>({
     name: '',
     version: '1.20.1',
@@ -64,6 +67,20 @@ const InstancesPage: React.FC = () => {
     }
   };
 
+  const handleLaunchInfo = async (id: string) => {
+    try {
+      setLaunchInfoLoading(true);
+      const response = await instancesApi.getLaunchInfo(id);
+      setLaunchInfo(response.data);
+      setShowLaunchInfoModal(true);
+    } catch (err) {
+      setError('Failed to load launch info');
+      console.error(err);
+    } finally {
+      setLaunchInfoLoading(false);
+    }
+  };
+
   const handleDelete = async (id: string) => {
     if (!window.confirm('Are you sure you want to delete this instance?')) return;
     try {
@@ -106,6 +123,7 @@ const InstancesPage: React.FC = () => {
               onLaunch={handleLaunch}
               onDelete={handleDelete}
               onEdit={() => navigate(`/instances/${instance.id}/edit`)}
+              onLaunchInfo={handleLaunchInfo}
             />
           ))}
         </div>
@@ -195,6 +213,49 @@ const InstancesPage: React.FC = () => {
           </div>
         </div>
       )}
+
+      {showLaunchInfoModal && launchInfo && (
+        <div className="modal-overlay" onClick={() => setShowLaunchInfoModal(false)}>
+          <div className="modal modal-large" onClick={(e) => e.stopPropagation()}>
+            <h2>Launch Info: {launchInfo.instance.name}</h2>
+            <div className="launch-info-content">
+              <div className="info-section">
+                <h3>Java Detection</h3>
+                {launchInfo.java_detected ? (
+                  <div className="java-detected">
+                    <p><strong>Path:</strong> {launchInfo.java_detected.path}</p>
+                    <p><strong>Version:</strong> {launchInfo.java_detected.version} (Major: {launchInfo.java_detected.major_version})</p>
+                    <p><strong>Type:</strong> {launchInfo.java_detected.is_jdk ? 'JDK' : 'JRE'}</p>
+                    <span className="badge badge-success">Suitable for Minecraft {launchInfo.instance.version}</span>
+                  </div>
+                ) : (
+                  <div className="java-not-detected">
+                    <p>No suitable Java installation found automatically.</p>
+                    <p>Required: Java {launchInfo.required_java_version}+</p>
+                    {launchInfo.java_executable && (
+                      <p><strong>Using configured:</strong> {launchInfo.java_executable}</p>
+                    )}
+                    <span className="badge badge-warning">Manual configuration may be required</span>
+                  </div>
+                )}
+              </div>
+
+              <div className="info-section">
+                <h3>Launch Command</h3>
+                <pre className="launch-command">{launchInfo.launch_command.join(' ')}</pre>
+                <button className="btn btn-secondary" onClick={() => navigator.clipboard.writeText(launchInfo.launch_command.join(' '))}>
+                  Copy Command
+                </button>
+              </div>
+            </div>
+            <div className="modal-actions">
+              <button className="btn btn-primary" onClick={() => setShowLaunchInfoModal(false)}>
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
@@ -204,7 +265,8 @@ const InstanceCard: React.FC<{
   onLaunch: (id: string) => void;
   onDelete: (id: string) => void;
   onEdit: () => void;
-}> = ({ instance, onLaunch, onDelete, onEdit }) => {
+  onLaunchInfo: (id: string) => void;
+}> = ({ instance, onLaunch, onDelete, onEdit, onLaunchInfo }) => {
   const statusColors: Record<string, string> = {
     created: '#6c757d',
     downloading: '#ffc107',
@@ -227,7 +289,7 @@ const InstanceCard: React.FC<{
       </div>
       <div className="instance-details">
         <p><strong>Version:</strong> {instance.version}</p>
-        {instance.loader && <p><strong>Loader:</strong> {instance.loader} {instance.loader_version ? `@ ${instance.loader_version}` : ''}</p>}
+        {instance.loader && <p><strong>Loader:</strong> {instance.loader} {instance.loader_version ? '@ ' + instance.loader_version : ''}</p>}
         <p><strong>Memory:</strong> {instance.memory_min}MB - {instance.memory_max}MB</p>
         <p><strong>Resolution:</strong> {instance.resolution_width}x{instance.resolution_height}</p>
       </div>
@@ -238,6 +300,9 @@ const InstanceCard: React.FC<{
           disabled={instance.status === 'launching' || instance.status === 'running'}
         >
           {instance.status === 'launching' ? 'Launching...' : instance.status === 'running' ? 'Running' : 'Launch'}
+        </button>
+        <button className="btn btn-info" onClick={() => onLaunchInfo(instance.id)}>
+          Launch Info
         </button>
         <button className="btn btn-secondary" onClick={onEdit}>
           Edit
