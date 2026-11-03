@@ -56,6 +56,13 @@ class InstanceResponse(InstanceBase):
     class Config:
         from_attributes = True
 
+class LaunchResponse(BaseModel):
+    """Response for instance launch, including launch command and Java info."""
+    instance: InstanceResponse
+    java_detected: Optional[dict] = None
+    java_executable: Optional[str] = None
+    launch_command: List[str] = []
+    required_java_version: int
 
 class InstanceListResponse(BaseModel):
     instances: List[InstanceResponse]

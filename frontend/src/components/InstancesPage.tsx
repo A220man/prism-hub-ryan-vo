@@ -1,7 +1,8 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { instancesApi } from '../api/instances';
-import type { Instance, InstanceCreate, LaunchInfo } from '../types/api';
+import type { Instance, InstanceCreate, LaunchInfo, LaunchResponse } from '../types/api';
 
 const InstancesPage: React.FC = () => {
   const [instances, setInstances] = useState<Instance[]>([]);
@@ -59,7 +60,10 @@ const InstancesPage: React.FC = () => {
 
   const handleLaunch = async (id: string) => {
     try {
-      await instancesApi.launch(id);
+      const response = await instancesApi.launch(id);
+      // Show launch info modal with the command and Java detection
+      setLaunchInfo(response.data);
+      setShowLaunchInfoModal(true);
       await fetchInstances();
     } catch (err) {
       setError('Failed to launch instance');
@@ -200,6 +204,62 @@ const InstancesPage: React.FC = () => {
                     max={32768}
                   />
                 </div>
+              </div>
+              <div className="form-row">
+                <div className="form-group">
+                  <label htmlFor="game_dir">Game Directory</label>
+                  <input
+                    id="game_dir"
+                    type="text"
+                    value={formData.game_dir || ''}
+                    onChange={(e) => setFormData({ ...formData, game_dir: e.target.value })}
+                    placeholder="Optional custom game directory"
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="java_version">Java Version/Path</label>
+                  <input
+                    id="java_version"
+                    type="text"
+                    value={formData.java_version || ''}
+                    onChange={(e) => setFormData({ ...formData, java_version: e.target.value })}
+                    placeholder="Optional: specific java executable path"
+                  />
+                </div>
+              </div>
+              <div className="form-row">
+                <div className="form-group">
+                  <label htmlFor="resolution_width">Width</label>
+                  <input
+                    id="resolution_width"
+                    type="number"
+                    value={formData.resolution_width || 854}
+                    onChange={(e) => setFormData({ ...formData, resolution_width: parseInt(e.target.value) })}
+                    min={320}
+                    max={7680}
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="resolution_height">Height</label>
+                  <input
+                    id="resolution_height"
+                    type="number"
+                    value={formData.resolution_height || 480}
+                    onChange={(e) => setFormData({ ...formData, resolution_height: parseInt(e.target.value) })}
+                    min={240}
+                    max={4320}
+                  />
+                </div>
+              </div>
+              <div className="form-group">
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={formData.fullscreen || false}
+                    onChange={(e) => setFormData({ ...formData, fullscreen: e.target.checked })}
+                  />
+                  Fullscreen
+                </label>
               </div>
               <div className="modal-actions">
                 <button type="button" className="btn btn-secondary" onClick={() => setShowCreateModal(false)}>

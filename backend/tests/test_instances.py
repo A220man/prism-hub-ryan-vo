@@ -1,6 +1,8 @@
+
 import pytest
 from sqlalchemy import select
 from app.models.instance import InstanceStatus
+
 @pytest.mark.asyncio
 async def test_create_instance(client, clean_db):
     response = await client.post(
@@ -86,5 +88,10 @@ async def test_launch_instance(client, clean_db):
     response = await client.post(f"/api/v1/instances/{instance_id}/launch")
     assert response.status_code == 200
     data = response.json()
-    assert data["status"] == "launching"
-    assert data["last_played"] is not None
+    # New response format: LaunchResponse with instance, java_detected, launch_command, etc.
+    assert "instance" in data
+    assert data["instance"]["status"] == "launching"
+    assert data["instance"]["last_played"] is not None
+    assert "launch_command" in data
+    assert isinstance(data["launch_command"], list)
+    assert "required_java_version" in data

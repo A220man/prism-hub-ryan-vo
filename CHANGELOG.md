@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.2.0 — work-in-progress checkpoint
+
+Partial code published for continued development. Known issues: STATUS.md.
+
+# Changelog
+
 ## 1.1.0 — work-in-progress checkpoint
 
 Partial code published for continued development. Known issues: STATUS.md.
@@ -31,5 +37,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Java detection service for automatic Java installation discovery
 - Launch info endpoint (`GET /api/v1/instances/{id}/launch-info`) returning detected Java and launch command
 - Frontend "Launch Info" modal showing Java version, path, JDK/JRE type, and full launch command
-- Minecraft version to Java version mapping (1.12→Java 8, 1.16→Java 11, 1.17→Java 16, 1.18+→Java 17)
+- Minecraft version to Java version mapping (1.12 to Java 8, 1.16 to Java 11, 1.17 to Java 16, 1.18+ to Java 17)
 - Copy-to-clipboard for launch command in UI
+
+## [Unreleased] - 2026-11-03
+
+### Changed
+- Launch endpoint (`POST /api/v1/instances/{id}/launch`) now returns `LaunchResponse` with full launch info including Java detection and command
+- Frontend "Launch" button now automatically shows launch info modal with detected Java and copyable command
+- Added `LaunchResponse` model to backend and frontend types
