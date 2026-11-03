@@ -1,3 +1,4 @@
+
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func
@@ -11,6 +12,7 @@ from app.models.instance import (
     InstanceResponse,
     InstanceListResponse,
     InstanceStatus,
+    LaunchResponse,
 )
 from app.core.database import get_db
 from app.services.instance_service import InstanceService
@@ -59,15 +61,18 @@ async def delete_instance(instance_id: str, db: AsyncSession = Depends(get_db)):
     deleted = await service.delete(instance_id)
     if not deleted:
         raise HTTPException(status_code=404, detail="Instance not found")
+    return
 
 
-@router.post("/instances/{instance_id}/launch", response_model=InstanceResponse)
+@router.post("/instances/{instance_id}/launch", response_model=LaunchResponse)
 async def launch_instance(instance_id: str, db: AsyncSession = Depends(get_db)):
     service = InstanceService(db)
-    instance = await service.launch(instance_id)
-    if not instance:
+    launch_info = await service.launch(instance_id)
+    if not launch_info:
         raise HTTPException(status_code=404, detail="Instance not found")
-    return instance
+    return launch_info
+
+
 @router.get("/instances/{instance_id}/launch-info")
 async def get_launch_info(instance_id: str, db: AsyncSession = Depends(get_db)):
     service = InstanceService(db)

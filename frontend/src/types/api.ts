@@ -67,3 +67,11 @@ export interface LaunchInfo {
   launch_command: string[];
   required_java_version: number;
 }
+
+export interface LaunchResponse {
+  instance: Instance;
+  java_detected: JavaInfo | null;
+  java_executable: string | null;
+  launch_command: string[];
+  required_java_version: number;
+}

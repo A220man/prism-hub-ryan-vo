@@ -1,3 +1,4 @@
+
 {
   "schema_version": 1,
   "current_feature": "instance-management",
@@ -61,7 +62,7 @@
     {
       "id": "instance-management",
       "title": "Minecraft instance management (create, list, launch)",
-      "status": "in_progress",
+      "status": "done",
       "acceptance": [
         "Create new instance with version selection",
         "List instances with metadata",
@@ -71,12 +72,16 @@
         "backend/app/services/java_detection.py",
         "backend/app/services/instance_service.py",
         "backend/app/api/v1/instances.py",
+        "backend/app/models/instance.py",
         "frontend/src/types/api.ts",
         "frontend/src/api/instances.ts",
         "frontend/src/components/InstancesPage.tsx",
         "frontend/src/App.css"
       ],
-      "tests": []
+      "tests": [
+        "backend/tests/test_instances.py",
+        "frontend/src/components/InstancesPage.test.tsx"
+      ]
     },
     {
       "id": "auth-yggdrasil",

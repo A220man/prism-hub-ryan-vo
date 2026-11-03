@@ -85,7 +85,7 @@ class InstanceService:
         await self.db.commit()
         return True
 
-    async def launch(self, instance_id: str) -> Optional[InstanceResponse]:
+    async def launch(self, instance_id: str) -> Optional[dict]:
         result = await self.db.execute(select(InstanceModel).where(InstanceModel.id == instance_id))
         db_instance = result.scalar_one_or_none()
         if not db_instance:
@@ -95,7 +95,12 @@ class InstanceService:
         db_instance.last_played = datetime.utcnow()
         await self.db.commit()
         await self.db.refresh(db_instance)
-        return InstanceResponse.model_validate(db_instance)
+
+        # Get launch info including Java detection and command
+        launch_info = await self.get_launch_info(instance_id)
+        if launch_info:
+            launch_info["instance"] = InstanceResponse.model_validate(db_instance)
+        return launch_info
 
     async def get_launch_info(self, instance_id: str) -> Optional[dict]:
         """Get launch information including detected Java and launch command."""
