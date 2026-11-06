@@ -1,10 +1,12 @@
 # Changelog
 
-## 1.2.0 — work-in-progress checkpoint
+## 1.3.0 — work-in-progress checkpoint
 
 Partial code published for continued development. Known issues: STATUS.md.
 
-# Changelog
+## 1.2.0 — work-in-progress checkpoint
+
+Partial code published for continued development. Known issues: STATUS.md.
 
 ## 1.1.0 — work-in-progress checkpoint
 
@@ -46,3 +48,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Launch endpoint (`POST /api/v1/instances/{id}/launch`) now returns `LaunchResponse` with full launch info including Java detection and command
 - Frontend "Launch" button now automatically shows launch info modal with detected Java and copyable command
 - Added `LaunchResponse` model to backend and frontend types
+
+## [Unreleased] - 2026-11-06
+
+### Fixed
+- Fixed `datetime.utcnow()` deprecation warnings in `backend/app/services/instance_service.py` by replacing with `datetime.now(timezone.utc)`
+- Backend no longer uses deprecated `datetime.utcnow()` for `updated_at` and `last_played` timestamps
