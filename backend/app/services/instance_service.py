@@ -1,7 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, update, delete, func
 from typing import List, Optional
-from datetime import datetime
+from datetime import datetime, timezone
 
 from app.models.instance_db import InstanceModel
 from app.models.instance import InstanceCreate, InstanceUpdate, InstanceResponse, InstanceListResponse, InstanceStatus
@@ -70,7 +70,7 @@ class InstanceService:
 
         for key, value in update_data.items():
             setattr(db_instance, key, value)
-        db_instance.updated_at = datetime.utcnow()
+        db_instance.updated_at = datetime.now(timezone.utc)
 
         await self.db.commit()
         await self.db.refresh(db_instance)
@@ -92,7 +92,7 @@ class InstanceService:
             return None
 
         db_instance.status = InstanceStatus.LAUNCHING
-        db_instance.last_played = datetime.utcnow()
+        db_instance.last_played = datetime.now(timezone.utc)
         await self.db.commit()
         await self.db.refresh(db_instance)
 
