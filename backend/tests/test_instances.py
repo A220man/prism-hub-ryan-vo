@@ -95,3 +95,41 @@ async def test_launch_instance(client, clean_db):
     assert "launch_command" in data
     assert isinstance(data["launch_command"], list)
     assert "required_java_version" in data
+@pytest.mark.asyncio
+async def test_launch_instance_user_java_path(client, clean_db):
+    """Test that user-specified java_version path takes priority over auto-detection."""
+    create_resp = await client.post(
+        "/api/v1/instances",
+        json={"name": "Custom Java Test", "version": "1.20.1", "java_version": "/custom/path/to/java"}
+    )
+    instance_id = create_resp.json()["id"]
+
+    response = await client.post(f"/api/v1/instances/{instance_id}/launch")
+    assert response.status_code == 200
+    data = response.json()
+    # User-specified path should be used as java_executable
+    assert data["java_executable"] == "/custom/path/to/java"
+    # java_detected should be None since user provided explicit path
+    assert data["java_detected"] is None
+    # Launch command should use the user-specified path
+    assert data["launch_command"][0] == "/custom/path/to/java"
+
+
+@pytest.mark.asyncio
+async def test_launch_info_user_java_path(client, clean_db):
+    """Test that get_launch_info respects user-specified java_version path."""
+    create_resp = await client.post(
+        "/api/v1/instances",
+        json={"name": "Custom Java Info Test", "version": "1.20.1", "java_version": "/another/custom/java"}
+    )
+    instance_id = create_resp.json()["id"]
+
+    response = await client.get(f"/api/v1/instances/{instance_id}/launch-info")
+    assert response.status_code == 200
+    data = response.json()
+    # User-specified path should be used as java_executable
+    assert data["java_executable"] == "/another/custom/java"
+    # java_detected should be None since user provided explicit path
+    assert data["java_detected"] is None
+    # Launch command should use the user-specified path
+    assert data["launch_command"][0] == "/another/custom/java"

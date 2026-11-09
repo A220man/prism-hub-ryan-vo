@@ -1,9 +1,19 @@
 # Changelog
 
+## 1.4.0 — work-in-progress checkpoint
+
+Partial code published for continued development. Known issues: STATUS.md.
+
 ## 1.3.0 — work-in-progress checkpoint
 
 Partial code published for continued development. Known issues: STATUS.md.
 
+## [Unreleased] - 2026-11-09
+
+### Fixed
+- User-specified `java_version` path now takes priority over auto-detected Java in launch info
+- When an instance has a custom `java_version` path configured, it is used as the Java executable instead of auto-detection
+- Added tests verifying user-specified Java path priority for both `/launch` and `/launch-info` endpoints
 ## 1.2.0 — work-in-progress checkpoint
 
 Partial code published for continued development. Known issues: STATUS.md.
