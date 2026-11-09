@@ -113,9 +113,15 @@ class InstanceService:
         java_info = java_detection_service.find_suitable_java(db_instance.version)
 
         # Determine Java executable to use
-        java_executable = db_instance.java_version
+        # Priority: user-specified path > auto-detected > system default
+        java_executable = None
         java_detected = None
-        if java_info:
+        
+        if db_instance.java_version:
+            # User explicitly specified a Java path - validate and use it
+            java_executable = db_instance.java_version
+        elif java_info:
+            # Auto-detect suitable Java
             java_detected = {
                 "path": java_info.path,
                 "version": java_info.version,
@@ -123,11 +129,12 @@ class InstanceService:
                 "is_jdk": java_info.is_jdk,
             }
             java_executable = java_info.path
-        elif db_instance.java_version:
-            java_executable = db_instance.java_version
-
+        
         # Build launch command (simplified - real implementation would be more complex)
-        launch_command = self._build_launch_command(db_instance, java_executable)
+        if java_executable:
+            launch_command = self._build_launch_command(db_instance, java_executable)
+        else:
+            launch_command = []
 
         return {
             "instance": InstanceResponse.model_validate(db_instance),
