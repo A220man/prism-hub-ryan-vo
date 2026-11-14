@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
 from app.api.v1 import health, instances
+from app.auth.router import router as auth_router
 
 app = FastAPI(
     title="Prism Hub API",
@@ -22,6 +23,7 @@ app.add_middleware(
 
 app.include_router(health.router, prefix="/api/v1", tags=["health"])
 app.include_router(instances.router, prefix="/api/v1", tags=["instances"])
+app.include_router(auth_router, prefix="/api/v1", tags=["auth"])
 
 
 @app.get("/health")
