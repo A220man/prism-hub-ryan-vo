@@ -4,7 +4,7 @@ Each round completes one feature or repair. Future items are planned, not implem
 
 ## Current round
 
-instance-management
+auth-yggdrasil
 
 ## Roadmap
 
@@ -37,7 +37,7 @@ Tests: `backend/tests/test_instances.py`, `frontend/src/components/InstancesPage
 
 ### auth-yggdrasil — Yggdrasil authentication with ALI support
 
-Status: planned
+Status: done
 
 Acceptance:
 - Microsoft/Yggdrasil login flow

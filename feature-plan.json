@@ -1,7 +1,6 @@
-
 {
   "schema_version": 1,
-  "current_feature": "instance-management",
+  "current_feature": "auth-yggdrasil",
   "features": [
     {
       "id": "project-skeleton",
@@ -86,7 +85,7 @@
     {
       "id": "auth-yggdrasil",
       "title": "Yggdrasil authentication with ALI support",
-      "status": "planned",
+      "status": "done",
       "acceptance": [
         "Microsoft/Yggdrasil login flow",
         "Authlib-Injector header support",
