@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "current_feature": "auth-yggdrasil",
+  "current_feature": "mod-management",
   "features": [
     {
       "id": "project-skeleton",
@@ -97,7 +97,7 @@
     {
       "id": "mod-management",
       "title": "Mod loading and management",
-      "status": "planned",
+      "status": "in_progress",
       "acceptance": [
         "Mod profile creation",
         "Modrinth/CurseForge integration",
