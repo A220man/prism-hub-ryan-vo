@@ -4,7 +4,7 @@ Each round completes one feature or repair. Future items are planned, not implem
 
 ## Current round
 
-auth-yggdrasil
+mod-management
 
 ## Roadmap
 
@@ -46,7 +46,7 @@ Acceptance:
 
 ### mod-management — Mod loading and management
 
-Status: planned
+Status: in_progress
 
 Acceptance:
 - Mod profile creation

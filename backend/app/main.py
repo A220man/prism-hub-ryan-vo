@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
-from app.api.v1 import health, instances
+from app.api.v1 import health, instances, mod_profiles
 from app.auth.router import router as auth_router
 
 app = FastAPI(
@@ -24,6 +24,7 @@ app.add_middleware(
 app.include_router(health.router, prefix="/api/v1", tags=["health"])
 app.include_router(instances.router, prefix="/api/v1", tags=["instances"])
 app.include_router(auth_router, prefix="/api/v1", tags=["auth"])
+app.include_router(mod_profiles.router, prefix="/api/v1", tags=["mod-profiles"])
 
 
 @app.get("/health")
